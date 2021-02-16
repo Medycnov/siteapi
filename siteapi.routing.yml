@@ -1,0 +1,8 @@
+
+siteapi.site_api_controller_get:
+  path: '/page_json/FOOBAR12345/{nid}'
+  defaults:
+    _controller: '\Drupal\siteapi\Controller\SiteApiController::get'
+    _title: 'Site api'
+  requirements:
+    _permission: true

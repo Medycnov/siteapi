@@ -1,0 +1,68 @@
+<?php
+
+/**
+ * @file
+ * Contains siteapi.module.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function siteapi_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the siteapi module.
+    case 'help.page.siteapi':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Custom module add site api key field') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+function siteapi_form_system_site_information_settings_alter(&$form,$form_state, $form_id) {
+
+
+    $site_api = \Drupal::config('api_key.settings')->get('siteapikey');
+
+    $form['api_settings'] = array(
+      '#type' => 'fieldset',
+      '#title' =>t('Site API settings'),
+      '#open' => true
+    );
+
+    $form['api_settings']['siteapikey'] = [
+      '#type' => 'textfield',
+      '#title' => t('Site API Key'),
+      '#default_value' => $site_api ? $site_api : 'No API Key yet',
+      '#description' => t('Enter the API key for making the site protected on API calls'),
+      '#maxlength' => 32,
+      '#required' => true,
+      '#placeholder'=> t('No API key yet')
+    ];
+
+
+    $form['api_settings']['actions']['#type'] = 'actions';
+    $form['actions']['submit'] = [
+      '#type' => 'submit',
+      '#value' => 'Update Configuration',
+      '#button_type' => 'primary',
+    ];
+
+
+    $form['#submit'][] = 'api_key_form_submit';
+return $form;
+}
+
+function api_key_form_submit(array $form, FormStateInterface $form_state) {
+
+  $config = \Drupal::service('config.factory')->getEditable('api_key.settings');
+  $config->set('siteapikey', $form_state->getValue('siteapikey'));
+  $config->save();
+  \Drupal::messenger()->addStatus(t('the Site API Key has been saved with "@apivalue" value',  ['@apivalue' => $form_state->getValue('siteapikey')] ));
+
+}

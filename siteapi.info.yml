@@ -1,0 +1,5 @@
+name: 'siteapi'
+type: module
+description: 'Custom module add site api key field'
+core: 8.x
+package: 'Custom'
